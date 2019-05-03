@@ -1,0 +1,12 @@
+.card{
+  height: 200px;
+  width: 125px;
+  border: 1px solid green;
+  margin: 25px;
+}
+#dealer-hand, #player-hand{
+  display: flex;
+}
+#deck{
+  
+}
