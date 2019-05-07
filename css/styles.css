@@ -8,5 +8,9 @@
   display: flex;
 }
 #deck{
-  
+  background-image: url('blue.svg') no-repeat center center fixed;
+}
+
+#stand{
+  display: none;
 }
