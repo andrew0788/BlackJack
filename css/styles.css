@@ -15,3 +15,6 @@
 #dealer-card-0{
   background-image: url('card-deck-css/images/backs/blue.svg') no-repeat center center fixed;
 }
+body{
+  background-color: 'green';
+}

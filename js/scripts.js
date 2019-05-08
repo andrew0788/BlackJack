@@ -4,12 +4,14 @@ let pHand = new Array;
 let dHand = new Array;
 let bet, winner;
 let winnings = 0;
-
+let turn ={
+  'player': handEl = document.getElementById('#dealer-hand')
+}
 /*----- constants -----*/
 // Game Deck
 function getDeck(){
   let suits = ['hearts', 'diamonds', 'spades', 'clubs'];
-  let values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  let values = ['A', '02', '03', '04', '05', '06', '07', '08', '09', '10', 'J', 'Q', 'K'];
   for (let i = 0; i < suits.length; i++){
     for (let x = 0; x < values.length; x++){
       let card = {Value: values[x], Suits: suits[i]}
@@ -34,13 +36,15 @@ function getDeck(){
 const faceCards = ['K', 'Q', 'J'];
 
 /*----- cached element references -----*/
-let playerHandCardsEl = document.querySelectorAll('#player-hand .card');
-let dealerHandCardsEl = document.querySelectorAll('#dealer-hand .card');
+let dHandEl = document.getElementById('dealer-hand');
+let pHandEl = document.getElementById('player-hand');
 let playBtn = document.getElementById('deal');
 let stayBtn = document.getElementById('stand');
 let totalScoreEl = document.getElementById('prize');
 let betInput = document.getElementById('bet');
 let scoreBoardEl= document.getElementById('score-board');
+//let dealerHandCardsEl = document.querySelectorAll('#dealer-hand .card');
+//let playerHandCardsEl = document.querySelectorAll('#player-hand .card');
 
 /*----- event listeners -----*/
 stayBtn.addEventListener('click', dealerPlay);
@@ -51,17 +55,16 @@ playBtn.addEventListener('click', onBet);
 function onBet(){
   // if deck is empty generate a new one
   if (deck.length === 0) getDeck();
-  // if new hand, deal cards for player and dealer
+  // if player's hand is empty, start a new game
   if (pHand.length === 0){
     init();
-  }else{
+    //otherwise add a card to the players hand
+  }else {
     pHand.push(deck.pop());
-    render();
+    render(pHand);
   }
-  //render will display cards, and call function to look for a winner
-  if (checkHand(pHand) === 21){
+  if (checkHand(pHand) === 21 && !winner){
     winner = 'player';
-    winnings += bet;
   } else if (checkHand(pHand) > 21){
     alert('bust');
     winner = 'dealer';
@@ -69,10 +72,25 @@ function onBet(){
   if (winner) settleBet();
   }
 
-function render(){
-  for (let i=0; i < pHand.length; i++){
-  playerHandCardsEl[i].textContent = pHand[i].Value;
-  dealerHandCardsEl[i].textContent = dHand[i].Value;
+function render(hand){
+  let turn; (hand === pHand) ? turn = pHandEl :turn = dHandEl;
+  if (hand.length === 0 || hand.length > 2) {
+    while(turn.hasChildNodes()){
+      turn.removeChild(turn.lastChild);
+    }
+  }
+  for (let i=0; i < hand.length; i++){
+    (faceCards.includes(hand[i].Value) || hand[i].Value == 'A') ? makeFaceCardEl(i) :makeValueCardEl(i);
+  }
+  function makeFaceCardEl(index){
+    let newCard = hand[index];
+    let cardEl = document.createElement('figure');
+    turn.appendChild(cardEl).className = `card ${newCard.Suits} ${newCard.Value}`;
+  }
+  function makeValueCardEl(index){
+    let newCard = hand[index];
+    let cardEl = document.createElement('figure');
+    turn.appendChild(cardEl).className = `card ${newCard.Suits} r${newCard.Value}`;
   }
 }
 
@@ -84,21 +102,19 @@ function settleBet(){
     resetHand();
 }
 
-function checkWin(){
-  let pTotal = checkHand(pHand);
-  let dTotal = checkHand(dHand);
-  if (dTotal < pTotal){
-      winner = 'player';
-    }
-}
+// function checkWin(){
+//   let pTotal = checkHand(pHand);
+//   let dTotal = checkHand(dHand);
+//   if (dTotal < pTotal){
+//       winner = 'player';
+//     }
+
 function dealerPlay(){
   dScore = checkHand(dHand);
   while (checkHand(dHand) < 17){
     dHand.push(deck.pop());
-    for (let i=1; i < dHand.length; i++){
-      dealerHandCardsEl[i].textContent = dHand[i].Value;
+    render(dHand);
     }
-  }
   (dScore < 21 && dScore > checkHand(pHand)) ? winner = 'dealer' :winner ='player';
   settleBet();
   }
@@ -108,7 +124,7 @@ function checkHand(hand){
   hand.forEach(card =>
     parseInt(card.Value) ? score += parseInt(card.Value)
     :faceCards.includes(card.Value) ? score += 10
-    :this.suits === 'A' && score <= 10 ? score += 11 :score += 1
+    :((card.Suits === 'A') && (score <= 10)) ? score += 11 :score += 1
   )
   return score;
   }
@@ -125,22 +141,18 @@ function init(){
   stayBtn.style.display = 'inline-block';
   betInput.style.display = 'none';
   //if previous steps have already been done, draw card for player
-  if (pHand[1].Values && pHand[2].Values === 'A') {
-    score = 21
-  }
-  if (faceCards.includes(pHand.Values) && pHand.Values.includes('A')){
-    winner = 'BlackJack'
-    alert('BLACKJACK!')
-  }
-  render();
+  //if (faceCards.includes(pHand.Value) && (pHand.Value === 'A'){
+    //winner = 'BlackJack';
+    //alert('BLACKJACK!');
+  render(pHand);
 }
 
 function resetHand(){
   pHand = new Array;
   dHand = new Array;
-  totalScoreEl.text = winnings;
+  totalScoreEl.textContent = JSON.stringify(winnings);
   betInput.style.display = 'inline-block';
   playBtn.textContent = 'Place Bet';
   stayBtn.style.display = 'none';
-  render();
+  render(pHand);
 }
