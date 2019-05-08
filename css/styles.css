@@ -1,16 +1,17 @@
 .card{
   height: 200px;
   width: 125px;
-  border: 1px solid green;
   margin: 25px;
 }
 #dealer-hand, #player-hand{
   display: flex;
 }
 #deck{
-  background-image: url('blue.svg') no-repeat center center fixed;
 }
 
 #stand{
   display: none;
+}
+#dealer-card-0{
+  background-image: url('card-deck-css/images/backs/blue.svg') no-repeat center center fixed;
 }
