@@ -2,12 +2,11 @@
 let deck = new Array;
 let pHand = new Array;
 let dHand = new Array;
-let bet, winner;
-let winnings = 0;
-let turn ={
-  'player': handEl = document.getElementById('#dealer-hand')
-}
+let winner = null;
+let bet, winnings = 100;
+
 /*----- constants -----*/
+const faceCards = ['K', 'Q', 'J'];
 // Game Deck
 function getDeck(){
   let suits = ['hearts', 'diamonds', 'spades', 'clubs'];
@@ -33,9 +32,10 @@ function getDeck(){
   return shuffleDeck(deck);
 }
 
-const faceCards = ['K', 'Q', 'J'];
 
 /*----- cached element references -----*/
+let playerTotalEl = document.getElementById('player-total')
+let dealerTotalEl = document.getElementById('dealer-total')
 let dHandEl = document.getElementById('dealer-hand');
 let pHandEl = document.getElementById('player-hand');
 let playBtn = document.getElementById('deal');
@@ -53,69 +53,73 @@ playBtn.addEventListener('click', onBet);
 /*----- functions -----*/
 
 function onBet(){
-  // if deck is empty generate a new one
   if (deck.length === 0) getDeck();
-  // if player's hand is empty, start a new game
-  if (pHand.length === 0){
-    init();
+  if (winner){
+     resetHand();
+   }if (pHand.length === 0){
+      init();
     //otherwise add a card to the players hand
-  }else {
-    pHand.push(deck.pop());
-    render(pHand);
+    }else {
+      pHand.push(deck.pop());
+      render(pHand);
+      if (checkHand(pHand) === 21){
+        winner = 'player';
+        dealerPlay();
+      }
+      if (checkHand(pHand) > 21){
+        winner = 'dealer';
+        dealerPlay();
+    }
   }
-  if (checkHand(pHand) === 21 && !winner){
-    winner = 'player';
-  } else if (checkHand(pHand) > 21){
-    alert('bust');
-    winner = 'dealer';
-  }
-  if (winner) settleBet();
-  }
+}
 
 function render(hand){
   let turn; (hand === pHand) ? turn = pHandEl :turn = dHandEl;
-  if (hand.length === 0 || hand.length > 2) {
+  //if (hand.length === 0 || hand.length > 2) {
     while(turn.hasChildNodes()){
       turn.removeChild(turn.lastChild);
     }
-  }
+  //}
   for (let i=0; i < hand.length; i++){
     (faceCards.includes(hand[i].Value) || hand[i].Value == 'A') ? makeFaceCardEl(i) :makeValueCardEl(i);
   }
-  function makeFaceCardEl(index){
-    let newCard = hand[index];
-    let cardEl = document.createElement('figure');
-    turn.appendChild(cardEl).className = `card ${newCard.Suits} ${newCard.Value}`;
-  }
-  function makeValueCardEl(index){
-    let newCard = hand[index];
-    let cardEl = document.createElement('figure');
-    turn.appendChild(cardEl).className = `card ${newCard.Suits} r${newCard.Value}`;
-  }
+    function makeFaceCardEl(index){
+      let newCard = hand[index];
+      let cardEl = document.createElement('figure');
+      turn.appendChild(cardEl).className = `card ${newCard.Suits} ${newCard.Value}`;
+    }
+    function makeValueCardEl(index){
+      let newCard = hand[index];
+      let cardEl = document.createElement('figure');
+      turn.appendChild(cardEl).className = `card ${newCard.Suits} r${newCard.Value}`;
+    }
+  playerTotalEl.textContent = checkHand(pHand)
 }
 
 function settleBet(){
-    scoreBoardEl.textContent = winner;
-    if (winner === 'player') winnings += bet;
-    if (winner === 'dealer') winnings -= bet;
-    if (winner === 'BlackJack') winnings += bet*2;
-    resetHand();
+  render(dHand);
+  if (winner === 'player') winnings += parseInt(bet);
+  if (winner === 'dealer') winnings -= parseInt(bet);
+  //if (winner === 'BlackJack') winnings += parseInt(bet*2);
+  scoreBoardEl.textContent = `Last Winner: ${winner}`;
+  playBtn.textContent = 'Play next hand';
+  betInput.style.display = 'inline-block';
+  stayBtn.style.display = 'none';
 }
 
-// function checkWin(){
-//   let pTotal = checkHand(pHand);
-//   let dTotal = checkHand(dHand);
-//   if (dTotal < pTotal){
-//       winner = 'player';
-//     }
-
 function dealerPlay(){
-  dScore = checkHand(dHand);
-  while (checkHand(dHand) < 17){
-    dHand.push(deck.pop());
-    render(dHand);
-    }
-  (dScore < 21 && dScore > checkHand(pHand)) ? winner = 'dealer' :winner ='player';
+  let dTotal = checkHand(dHand);
+  let pTotal = checkHand(pHand);
+  if (pTotal < 21){
+    while (dTotal < 17 && winner === null){
+      dHand.push(deck.pop());
+      dTotal = checkHand(dHand);
+      dealerTotalEl.textContent = dTotal;
+      }
+    (dTotal > 21 || (pTotal <= 21 && pTotal > dTotal)) ? winner ='player'
+    :(dTotal > pTotal) ? winner = 'dealer'
+    :winner = 'draw';
+  }
   settleBet();
   }
 
@@ -124,7 +128,7 @@ function checkHand(hand){
   hand.forEach(card =>
     parseInt(card.Value) ? score += parseInt(card.Value)
     :faceCards.includes(card.Value) ? score += 10
-    :((card.Suits === 'A') && (score <= 10)) ? score += 11 :score += 1
+    :(card.Value == 'A' && score < 10) ? score += 11 :score += 1
   )
   return score;
   }
@@ -135,24 +139,33 @@ function init(){
   dHand = deck.splice(0, 2);
   //store bet value
   bet = betInput.value;
-  playBtn.textContent = 'Hit';
   //set window for main  game loop
-  winner = false;
+  winner = null;
+  playBtn.textContent = 'Hit';
   stayBtn.style.display = 'inline-block';
   betInput.style.display = 'none';
   //if previous steps have already been done, draw card for player
-  //if (faceCards.includes(pHand.Value) && (pHand.Value === 'A'){
-    //winner = 'BlackJack';
-    //alert('BLACKJACK!');
+  if (faceCards.includes(pHand.Value) && pHand.Value.includes('A')){
+    winner = 'BlackJack';
+    alert('BLACKJACK!');
+  }
   render(pHand);
+  renderDealerFirstDeal();
+  dealerTotalEl = '';
 }
 
 function resetHand(){
   pHand = new Array;
   dHand = new Array;
-  totalScoreEl.textContent = JSON.stringify(winnings);
+  totalScoreEl.textContent = `Current Total: ${parseInt(winnings)}`;
   betInput.style.display = 'inline-block';
   playBtn.textContent = 'Place Bet';
   stayBtn.style.display = 'none';
+  winnner = null;
   render(pHand);
+  render(dHand);
+}
+function renderDealerFirstDeal(){
+  dHandEl.appendChild(dHand[0]).className = 'card back';
+  dHandEl.appendChild(dHand[1]).className = `card ${dHand[1].Suits} r${dHand[1].Value} ${dHand[1].Value}`;
 }

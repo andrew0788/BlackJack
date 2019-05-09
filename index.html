@@ -2,22 +2,32 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="card-deck-css/css/cardstarter.min.css">
+    <!-- <link href="//db.onlinewebfonts.com/c/3bae817a3ffed7db86b763dd7d8004b2?family=League+Gothic" rel="stylesheet" type="text/css"/> -->
+    <!-- <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/press-start-2p" type="text/css"/> -->
+    <link rel="stylesheet" href="css/styles.css">
     <script defer src="js/scripts.js"></script>
     <title>Black Jack</title>
   </head>
   <body>
     <h1>BLACKJACK</h1>
-    <div id="deck"class = 'card back'></div>
-    <div id="dealer-hand">
-    </div>
-    <div id = "player-hand">
-    </div>
+    <section id = "card-table">
+      <!-- <div id="deck" class = 'card back'></div> -->
+      <h2 >Dealer's Hand</h2>
+      <h2 id = "dealer-total"></h2>
+      <div id="dealer-hand">
+        <figure class ="card back"></figure>
+      </div>
+      <h2>Player's Hand</h2>
+      <h2 id = "player-total"></h2>
+      <div id = "player-hand">
+        <figure class ="card back"></figure>
+      </div>
+    </section>
     <h2 id="prize">score</h2>
     <h3 id="score-board">Place your bet, and press deal to start playing!</h3>
-    <input id ="bet" type="number" name="" value="10">
     <button id ="deal" type="button" name="">Deal</button>
     <button id="stand" type="button" name="">Stay</button>
+    <input type="number" name="" value="100" id="bet">
   </body>
 </html>

@@ -1,20 +1,42 @@
+.clear-fix:before,
+.clear-fix:after {
+  content: "";
+  display: table;
+}
+
+.clear-fix:after {
+  clear: both;
+}
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+
 .card{
-  height: 200px;
-  width: 125px;
-  margin: 25px;
+  height: 15vmin;
+  width: 11vmin;
+  justify-content: space-between;
 }
 #dealer-hand, #player-hand{
-  display: flex;
-}
-#deck{
+  flex-direction: row;
 }
 
 #stand{
   display: none;
 }
-#dealer-card-0{
-  background-image: url('card-deck-css/images/backs/blue.svg') no-repeat center center fixed;
+
+#game-board{
+  display: flex;
+  height: 60vmax;
+  width: 100vmax;
+  border: 5px solid green;
 }
 body{
-  background-color: 'green';
+  background-color: forestgreen;
+  align-items: center;
+  font-family: 'PressStart2PRegular';
+  color: gold;
+}
+h2{
+  display: flex;
+  margin-bottom: 20px;
 }
