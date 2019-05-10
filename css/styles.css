@@ -10,33 +10,37 @@
 *, *::after, *::before {
   box-sizing: border-box;
 }
-
-.card{
-  height: 15vmin;
-  width: 11vmin;
-  justify-content: space-between;
-}
-#dealer-hand, #player-hand{
-  flex-direction: row;
-}
-
-#stand{
-  display: none;
-}
-
-#game-board{
-  display: flex;
-  height: 60vmax;
-  width: 100vmax;
-  border: 5px solid green;
-}
 body{
   background-color: forestgreen;
-  align-items: center;
-  font-family: 'PressStart2PRegular';
+  font-family: 'Roboto Slab';
   color: gold;
+  font-size: 2vmin;
 }
 h2{
   display: flex;
   margin-bottom: 20px;
+}
+h1{
+  font-family: 'Bungee Shade';
+  font-size: 55px;
+  color: black;
+}
+.card{
+  height: 15vmin;
+  width: 11vmin;
+  margin-left: 25px;
+  justify-content: space-around;
+}
+#dealer-hand, #player-hand{
+  flex-direction: row;
+  justify-content: center;
+}
+#stay{
+  display: none;
+}
+#game-table{
+  display: flex;
+  height: 60vmin;
+  width: 100vmin;
+  flex-direction: column;
 }

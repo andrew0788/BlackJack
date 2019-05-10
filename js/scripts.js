@@ -39,12 +39,11 @@ let dealerTotalEl = document.getElementById('dealer-total')
 let dHandEl = document.getElementById('dealer-hand');
 let pHandEl = document.getElementById('player-hand');
 let playBtn = document.getElementById('deal');
-let stayBtn = document.getElementById('stand');
+let stayBtn = document.getElementById('stay');
 let totalScoreEl = document.getElementById('prize');
 let betInput = document.getElementById('bet');
 let scoreBoardEl= document.getElementById('score-board');
-//let dealerHandCardsEl = document.querySelectorAll('#dealer-hand .card');
-//let playerHandCardsEl = document.querySelectorAll('#player-hand .card');
+
 
 /*----- event listeners -----*/
 stayBtn.addEventListener('click', dealerPlay);
@@ -53,12 +52,12 @@ playBtn.addEventListener('click', onBet);
 /*----- functions -----*/
 
 function onBet(){
+  dealerTotalEl.textContent= ' '
   if (deck.length === 0) getDeck();
   if (winner){
      resetHand();
    }if (pHand.length === 0){
       init();
-    //otherwise add a card to the players hand
     }else {
       pHand.push(deck.pop());
       render(pHand);
@@ -75,8 +74,7 @@ function onBet(){
 
 function render(hand){
   let turn; (hand === pHand) ? turn = pHandEl :turn = dHandEl;
-  //if (hand.length === 0 || hand.length > 2) {
-    while(turn.hasChildNodes()){
+  while(turn.hasChildNodes()){
       turn.removeChild(turn.lastChild);
     }
   //}
@@ -97,6 +95,7 @@ function render(hand){
 }
 
 function settleBet(){
+  dealerTotalEl.textContent = checkHand(dHand);
   render(dHand);
   if (winner === 'player') winnings += parseInt(bet);
   if (winner === 'dealer') winnings -= parseInt(bet);
@@ -110,13 +109,13 @@ function settleBet(){
 function dealerPlay(){
   let dTotal = checkHand(dHand);
   let pTotal = checkHand(pHand);
+  dealerTotalEl.textContent = dTotal;
   if (pTotal < 21){
     while (dTotal < 17 && winner === null){
       dHand.push(deck.pop());
       dTotal = checkHand(dHand);
-      dealerTotalEl.textContent = dTotal;
       }
-    (dTotal > 21 || (pTotal <= 21 && pTotal > dTotal)) ? winner ='player'
+      (dTotal > 21 || (pTotal <= 21 && pTotal > dTotal)) ? winner ='player'
     :(dTotal > pTotal) ? winner = 'dealer'
     :winner = 'draw';
   }
@@ -125,13 +124,17 @@ function dealerPlay(){
 
 function checkHand(hand){
   let score = 0;
+  hand.sort(function (card){
+    if (card.Value === 'A'){ return 1;
+    } else return -1;
+    });
   hand.forEach(card =>
     parseInt(card.Value) ? score += parseInt(card.Value)
     :faceCards.includes(card.Value) ? score += 10
-    :(card.Value == 'A' && score < 10) ? score += 11 :score += 1
+    :(score <= 10) ? score += 11 :score += 1
   )
   return score;
-  }
+}
 
 function init(){
   //deals cards
@@ -144,14 +147,12 @@ function init(){
   playBtn.textContent = 'Hit';
   stayBtn.style.display = 'inline-block';
   betInput.style.display = 'none';
-  //if previous steps have already been done, draw card for player
-  if (faceCards.includes(pHand.Value) && pHand.Value.includes('A')){
+  if (checkHand(pHand) === 21) {
     winner = 'BlackJack';
-    alert('BLACKJACK!');
-  }
+    settleBet();
+  };
   render(pHand);
   renderDealerFirstDeal();
-  dealerTotalEl = '';
 }
 
 function resetHand(){
@@ -166,6 +167,11 @@ function resetHand(){
   render(dHand);
 }
 function renderDealerFirstDeal(){
-  dHandEl.appendChild(dHand[0]).className = 'card back';
-  dHandEl.appendChild(dHand[1]).className = `card ${dHand[1].Suits} r${dHand[1].Value} ${dHand[1].Value}`;
+  while(dHandEl.hasChildNodes()){
+      dHandEl.removeChild(dHandEl.lastChild);
+    }
+  let dCardBack = document.createElement('figure');
+  let dCard = document.createElement('figure');
+  dHandEl.appendChild(dCardBack).className = 'card back';
+  dHandEl.appendChild(dCard).className = `card ${dHand[1].Suits} r${dHand[1].Value} ${dHand[1].Value}`;
 }
