@@ -1,7 +1,7 @@
 # BlackJack
 
 
-## created with JavaScript, CSS, and HTML
+## Created with JavaScript, CSS, and HTML
 
 ### Place bet and click "Deal" to start playing
 
