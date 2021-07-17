@@ -3,9 +3,12 @@
 
 ## created with JavaScript, CSS, and HTML
 
-### place bet and click "Deal" to start playing
+### Place bet and click "Deal" to start playing
 
-### I'm looking forward to improving the design and add the ability to split your hand.  
+## Improvements to make
+-UI improvments
+-Add the abbility to split your hand
+-Persistent Scoring
 
 ![screenshoot](https://i.imgur.com/QpoirpB.png)
 
